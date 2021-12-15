@@ -7,14 +7,13 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, r2_score
-
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import math
 
 df = pd.read_csv('avocado.csv')
 
 # One Hot Encoding
 df = pd.get_dummies(df, columns = ['region', 'type'])
-
 
 # Convert column names and drop the 'Date' column
 columnList = list(df.columns)
@@ -31,21 +30,13 @@ res = {columnList[i] : correlationArr[i] for i in range(len(columnList))}
 
 topList = []
 topDict = {}
-for i in range(10):
+for i in range(11):
   itemMaxValue = max(res.items(), key=lambda x:x[1])
   topDict[itemMaxValue[0]] = itemMaxValue[1]
   topList.append(itemMaxValue[0])
   del res[itemMaxValue[0]]
 
-# counter = 0
-# for i in topList:
-#   if i=='AveragePrice' or i=='Total Bags' or i=='Large Bags' or i=='Unnamed: 0' or i=='XLarge Bags' or i=='Small Bags':
-#     topList.pop(counter)
-#   counter += 1
-  
 topList.pop(0)
-
-print(topList)
   
 X = df[topList]
 y = df['AveragePrice']
@@ -63,3 +54,6 @@ mlp.fit(X_train, y_train)
 
 predictions = mlp.predict(X_test)
 print(r2_score(y_test, predictions))
+print(f'Mean Absolute Error = {mean_absolute_error(y_test,predictions)}')
+print(f'Mean Squared Error = {mean_squared_error(y_test,predictions)}')
+print(f'Root Mean Squared Error = {math.sqrt(mean_squared_error(y_test,predictions))}')
